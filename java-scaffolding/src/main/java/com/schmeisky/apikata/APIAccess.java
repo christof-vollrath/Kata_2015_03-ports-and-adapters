@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 public class APIAccess {
 
@@ -31,6 +32,26 @@ public class APIAccess {
         } catch (IOException e) {
             throw new RuntimeException("unable to readData", e);
         }
+    }
+
+    public Weather readWeather() {
+        Weather weather = null;
+        try {
+            final URL url = new URL("http://apis.is/weather/observations/en?stations=1");
+            try(InputStream inputStream = url.openStream();
+                InputStreamReader inputStreamReader = new InputStreamReader(inputStream, Charset.forName("UTF-8"));
+            ) {
+                final Gson gson = new Gson();
+                final Result result = gson.fromJson(inputStreamReader, Result.class);
+                System.out.println(result);
+                weather = new Weather(result.getResults().get(0));
+            }
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("unable to parse URL", e);
+        } catch (IOException e) {
+            throw new RuntimeException("unable to readData", e);
+        }
+        return weather;
     }
 
     public static class Result {
